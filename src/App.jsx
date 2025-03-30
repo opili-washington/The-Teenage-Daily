@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import NewsList from "./components/NewsList";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import CategoryFilter from "./components/CategoryFilter";
+import SearchBar from "./components/SearchBar";
 
-function App() {
-  const [count, setCount] = useState(0)
+const API_KEY = "2b515ad26bab4039b2e3bb9f7144a8e9"; //My api key
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function App () {
+  const [news, setNews] = useState([]);
+  const [filteredNews, setFilteredNews] = useState([]);
+  const [category, setCategory] = useState("general");
+  const [searchQuery, setSearchQuery] =useState("");
+
+  useEffect(() => {
+    fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`)
+    .then((response) => response.json())
+    .then((data) =>{
+       setNews(data.articles);
+       setFilteredNews(data.articles);
+    })
+    .catch((error) => console.error("Error fetching news:", error));
+  }, [category] );
+
+  useEffect(() => {
+    setFilteredNews(
+      news.filter((article) =>
+      article.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [searchQuery, news]);
+
+  return(
+    <div className="app">
+        <Navbar />
+        <SearchBar setSearchQuery={setSearchQuery} />
+        <CategoryFilter setCategory={setCategory} />
+        <NewsList articles={filteredNews} />
+        <Footer />
+    </div>
+  );
 }
 
-export default App
+export default App;
