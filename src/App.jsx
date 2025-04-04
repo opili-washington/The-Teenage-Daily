@@ -5,41 +5,42 @@ import Footer from "./components/Footer";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 
-const API_KEY = "2b515ad26bab4039b2e3bb9f7144a8e9"; //My api key
+const API_KEY = "d103567fb63446618c8eec319dbf2c24"; //My Api key
 
-function App () {
+function App() {
   const [news, setNews] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
   const [category, setCategory] = useState("general");
-  const [searchQuery, setSearchQuery] =useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`)
-    .then((response) => response.json())
-    .then((data) =>{
-       setNews(data.articles);
-       setFilteredNews(data.articles);
-    })
-    .catch((error) => console.error("Error fetching news:", error));
-  }, [category] );
-
+    fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apikey=${API_KEY}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles);
+        setFilteredNews(data.articles);
+      })
+      .catch((error) => console.error("Error fetching news:", error));
+  }, [category]);
+  
   useEffect(() => {
     setFilteredNews(
       news.filter((article) =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase())
+      article.title.toLowerCase().includes(searchQuery.toLocaleLowerCase())
       )
     );
   }, [searchQuery, news]);
 
-  return(
+  return (
     <div className="app">
-        <Navbar />
-        <SearchBar setSearchQuery={setSearchQuery} />
-        <CategoryFilter setCategory={setCategory} />
-        <NewsList articles={filteredNews} />
-        <Footer />
+      <Navbar />
+      <SearchBar setSearchQuery={setSearchQuery}/>
+      <CategoryFilter setCategory={setCategory}/>
+      <NewsList articles={filteredNews} />
+      <Footer/>
     </div>
   );
+
 }
 
 export default App;
